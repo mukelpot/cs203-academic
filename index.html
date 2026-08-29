@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Adaptive Academic Planner — Mockup</title>
+<style>
+  :root {
+    color-scheme: light;
+    --page:        #f9f9f7;
+    --surface:     #fcfcfb;
+    --ink:         #0b0b0b;
+    --ink-2:       #52514e;
+    --muted:       #898781;
+    --grid:        #e1e0d9;
+    --baseline:    #c3c2b7;
+    --border:      rgba(11,11,11,0.10);
+    --series-1:    #2a78d6;   /* blue — primary data color */
+    --series-1-lt: #cde2fb;
+    --good:        #0ca30c;
+    --good-text:   #006300;
+    --warning:     #fab219;
+    --serious:     #ec835a;
+    --critical:    #d03b3b;
+    --accent-wash: rgba(42,120,214,0.08);
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    background: var(--page);
+    color: var(--ink);
+    font-size: 14px;
+    line-height: 1.45;
+  }
+
+  /* ---------- Header ---------- */
+  header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 14px 24px 0;
+  }
+  .header-top { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+  .brand { display: flex; align-items: center; gap: 10px; }
+  .brand-mark {
+    width: 32px; height: 32px; border-radius: 8px;
+    background: var(--series-1); color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 15px;
+  }
+  .brand h1 { font-size: 17px; margin: 0; }
+  .brand .sub { font-size: 12px; color: var(--muted); }
+  .student-chip {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 13px; color: var(--ink-2);
+  }
+  .avatar {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: var(--series-1-lt); color: var(--series-1);
+    display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 12px;
+  }
+  nav { display: flex; gap: 4px; margin-top: 12px; flex-wrap: wrap; }
+  nav button {
+    appearance: none; border: none; background: none;
+    font: inherit; font-size: 13.5px; color: var(--ink-2);
+    padding: 8px 14px 10px; cursor: pointer;
+    border-bottom: 2px solid transparent;
+  }
+  nav button:hover { color: var(--ink); background: var(--accent-wash); border-radius: 6px 6px 0 0; }
+  nav button.active { color: var(--series-1); border-bottom-color: var(--series-1); font-weight: 600; }
+  nav .nav-badge {
+    display: inline-block; min-width: 16px; padding: 0 4px; margin-left: 4px;
+    background: var(--critical); color: #fff; border-radius: 8px;
+    font-size: 11px; font-weight: 700; line-height: 16px;
+  }
+
+  main { max-width: 1080px; margin: 0 auto; padding: 20px 24px 60px; }
+  section.tab { display: none; }
+  section.tab.active { display: block; }
+  h2 { font-size: 18px; margin: 4px 0 14px; }
+  h3 { font-size: 14.5px; margin: 0 0 10px; }
+  .hint { color: var(--muted); font-size: 12.5px; }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 760px) { .grid-2 { grid-template-columns: 1fr; } }
+
+  /* ---------- Stat tiles ---------- */
+  .tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; margin-bottom: 16px; }
+  .tile {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; padding: 14px 16px;
+  }
+  .tile .label { font-size: 12px; color: var(--muted); }
+  .tile .value { font-size: 26px; font-weight: 700; margin-top: 2px; }
+  .tile .note { font-size: 12px; color: var(--ink-2); margin-top: 2px; }
+  .tile .note.up-good { color: var(--good-text); }
+  .tile .note.down-bad { color: var(--critical); }
+
+  /* ---------- Status pills (icon + label, never color alone) ---------- */
+  .pill {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: 12px; font-weight: 600;
+    padding: 2px 9px; border-radius: 999px; border: 1px solid var(--border);
+    background: var(--surface); color: var(--ink-2);
+  }
+  .pill .dot { width: 8px; height: 8px; border-radius: 50%; }
+  .pill.good .dot { background: var(--good); }
+  .pill.warning .dot { background: var(--warning); }
+  .pill.serious .dot { background: var(--serious); }
+  .pill.critical .dot { background: var(--critical); }
+
+  /* ---------- Workload bar chart ---------- */
+  .chart-title { font-size: 13px; font-weight: 600; margin-bottom: 2px; }
+  .chart-sub { font-size: 12px; color: var(--muted); margin-bottom: 12px; }
+  .barchart {
+    display: flex; align-items: flex-end; gap: 14px;
+    height: 140px; padding: 0 4px;
+    border-bottom: 1px solid var(--baseline);
+    position: relative;
+  }
+  .barcol { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; cursor: default; }
+  .bar {
+    width: 26px; background: var(--series-1);
+    border-radius: 4px 4px 0 0;
+  }
+  .barcol:hover .bar { background: #1c5cab; }
+  .bar-cap { background: var(--critical); border-radius: 4px 4px 0 0; width: 26px; }
+  .bar-labels { display: flex; gap: 14px; padding: 6px 4px 0; }
+  .bar-labels span { flex: 1; text-align: center; font-size: 11.5px; color: var(--muted); }
+  .tooltip {
+    position: fixed; z-index: 50; pointer-events: none;
+    background: var(--ink); color: #fff;
+    font-size: 12px; padding: 6px 9px; border-radius: 6px;
+    transform: translate(-50%, calc(-100% - 10px));
+    white-space: nowrap;
+  }
+  .tooltip[hidden] { display: none; }
+
+  /* ---------- Lists ---------- */
+  .rowlist { list-style: none; margin: 0; padding: 0; }
+  .rowlist li {
+    display: flex; align-items: center; justify-content: space-between; gap: 10px;
+    padding: 9px 2px; border-bottom: 1px solid var(--grid);
+  }
+  .rowlist li:last-child { border-bottom: none; }
+  .rowlist .main { min-width: 0; }
+  .rowlist .title { font-weight: 600; font-size: 13.5px; }
+  .rowlist .meta { font-size: 12px; color: var(--muted); }
+  .mod-tag {
+    display: inline-block; font-size: 11px; font-weight: 700;
+    padding: 1px 7px; border-radius: 5px; margin-right: 6px;
+    background: var(--series-1-lt); color: #184f95;
+  }
+
+  /* ---------- Buttons ---------- */
+  .btn {
+    appearance: none; font: inherit; font-size: 13px; font-weight: 600;
+    padding: 7px 14px; border-radius: 8px; cursor: pointer;
+    border: 1px solid var(--border); background: var(--surface); color: var(--ink);
+  }
+  .btn:hover { background: var(--accent-wash); }
+  .btn.primary { background: var(--series-1); border-color: var(--series-1); color: #fff; }
+  .btn.primary:hover { background: #1c5cab; }
+  .btn.danger-outline { color: var(--critical); }
+  .btn.small { font-size: 12px; padding: 5px 10px; }
+
+  /* ---------- Simulation banner ---------- */
+  .sim-banner {
+    display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+    background: #fdf3ec; border: 1px solid var(--serious);
+    border-radius: 10px; padding: 12px 16px; margin-bottom: 16px;
+    font-size: 13.5px;
+  }
+  .sim-banner strong { color: #b34a24; }
+  .sim-banner[hidden] { display: none; }
+
+  /* ---------- Week planner grid ---------- */
+  .week {
+    display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px;
+    overflow-x: auto;
+  }
+  .day { min-width: 110px; }
+  .day-head { font-size: 12px; font-weight: 700; color: var(--ink-2); padding-bottom: 6px; text-align: center; }
+  .day-head .date { display: block; font-weight: 400; color: var(--muted); }
+  .slot {
+    border-radius: 8px; padding: 8px 9px; margin-bottom: 8px;
+    background: var(--surface); border: 1px solid var(--border);
+    font-size: 12px;
+  }
+  .slot .slot-mod { font-weight: 700; font-size: 11.5px; }
+  .slot .slot-task { color: var(--ink-2); }
+  .slot .slot-time { color: var(--muted); font-size: 11px; margin-top: 2px; }
+  .slot.deep { border-left: 3px solid var(--series-1); }
+  .slot.changed { background: #eef5fd; border: 1px dashed var(--series-1); }
+  .slot.changed .changed-tag { color: #184f95; font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; }
+  .slot.removed { opacity: .45; text-decoration: line-through; }
+  .slot .changed-tag, .slot.free { color: var(--muted); }
+  .slot.free { background: none; border: 1px dashed var(--grid); text-align: center; }
+  [hidden] { display: none !important; }
+
+  /* ---------- Risk cards ---------- */
+  .risk-card { border-left: 4px solid var(--grid); }
+  .risk-card.level-good { border-left-color: var(--good); }
+  .risk-card.level-warning { border-left-color: var(--warning); }
+  .risk-card.level-serious { border-left-color: var(--serious); }
+  .risk-card.level-critical { border-left-color: var(--critical); }
+  .risk-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+  .prob { font-size: 12.5px; color: var(--ink-2); }
+  .prob b { font-size: 15px; color: var(--ink); }
+  .meter { height: 6px; background: var(--grid); border-radius: 3px; margin-top: 10px; overflow: hidden; }
+  .meter > div { height: 100%; border-radius: 3px; background: var(--series-1); }
+
+  /* ---------- Tables ---------- */
+  .tbl-wrap { overflow-x: auto; }
+  table { border-collapse: collapse; width: 100%; font-size: 13px; }
+  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--grid); white-space: nowrap; }
+  th { font-size: 12px; color: var(--muted); font-weight: 600; }
+  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+  .fitbar { display: inline-block; vertical-align: middle; width: 90px; height: 6px; background: var(--grid); border-radius: 3px; margin-right: 8px; }
+  .fitbar > i { display: block; height: 100%; border-radius: 3px; background: var(--series-1); }
+
+  /* ---------- Info feed ---------- */
+  .feed-item { display: flex; gap: 12px; padding: 12px 2px; border-bottom: 1px solid var(--grid); }
+  .feed-item:last-child { border-bottom: none; }
+  .feed-icon {
+    flex: none; width: 34px; height: 34px; border-radius: 8px;
+    background: var(--accent-wash); display: flex; align-items: center; justify-content: center; font-size: 16px;
+  }
+  .feed-body { min-width: 0; }
+  .feed-title { font-weight: 600; font-size: 13.5px; }
+  .feed-meta { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .tag {
+    display: inline-block; font-size: 11px; font-weight: 700;
+    padding: 1px 7px; border-radius: 5px; margin-left: 6px; vertical-align: 1px;
+  }
+  .tag.change { background: #fdecec; color: #a12727; }
+  .tag.fresh { background: #e8f6e8; color: var(--good-text); }
+  .tag.stale { background: #f0efec; color: var(--ink-2); }
+  .tag.conflict { background: #fdf3ec; color: #b34a24; }
+
+  /* ---------- Advisor ---------- */
+  .rec { border-left: 4px solid var(--series-1); }
+  .rec .why { background: var(--page); border-radius: 8px; padding: 10px 12px; font-size: 13px; margin: 10px 0; }
+  .rec .why b { display: block; font-size: 11.5px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); margin-bottom: 3px; }
+  .rec-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  .confidence { font-size: 12px; color: var(--muted); margin-left: auto; }
+  .rec.accepted { border-left-color: var(--good); }
+  .rec.rejected { opacity: .55; }
+  .rec-status { font-size: 12.5px; font-weight: 700; }
+  .rec-status.ok { color: var(--good-text); }
+  .rec-status.no { color: var(--ink-2); }
+  .modify-box { margin-top: 10px; }
+  .modify-box textarea {
+    width: 100%; font: inherit; font-size: 13px; padding: 8px 10px;
+    border: 1px solid var(--border); border-radius: 8px; resize: vertical; min-height: 54px;
+  }
+
+  footer { text-align: center; color: var(--muted); font-size: 12px; padding: 24px; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-top">
+    <div class="brand">
+      <div class="brand-mark">A</div>
+      <div>
+        <h1>Adaptive Academic Planner</h1>
+        <div class="sub">AY2026–27 Term 1 · Week 3 · Mockup (sample data)</div>
+      </div>
+    </div>
+    <div class="student-chip">
+      <span class="avatar">M</span> Michael · Y2 Computer Science
+    </div>
+  </div>
+  <nav id="tabs">
+    <button data-tab="overview" class="active">Overview</button>
+    <button data-tab="planner">Adaptive Planner</button>
+    <button data-tab="risks">Risk Forecast <span class="nav-badge" id="risk-badge" hidden>1</span></button>
+    <button data-tab="boss">BOSS Assistant</button>
+    <button data-tab="info">University Info</button>
+    <button data-tab="advisor">AI Advisor <span class="nav-badge" id="advisor-badge" hidden>1</span></button>
+  </nav>
+</header>
+
+<main>
+
+  <div class="sim-banner" id="sim-banner" hidden>
+    ⚠️ <span><strong>Change detected:</strong> CS301 Assignment 2 deadline moved <b>Fri 4 Sep → Tue 1 Sep</b>.
+    The plan was recalculated, risk forecasts updated, and a new recommendation is waiting in the AI Advisor.</span>
+    <button class="btn small" id="sim-reset">Reset demo</button>
+  </div>
+
+  <!-- ================= OVERVIEW ================= -->
+  <section class="tab active" id="tab-overview">
+    <h2>Academic overview</h2>
+
+    <div class="tiles">
+      <div class="tile">
+        <div class="label">Enrolled modules</div>
+        <div class="value">5</div>
+        <div class="note">20 course units</div>
+      </div>
+      <div class="tile">
+        <div class="label">Deadlines in next 14 days</div>
+        <div class="value" id="tile-deadlines">4</div>
+        <div class="note" id="tile-deadlines-note">Nearest: IS216 quiz, Mon</div>
+      </div>
+      <div class="tile">
+        <div class="label">Scheduled vs available (this week)</div>
+        <div class="value" id="tile-hours">18 / 24 h</div>
+        <div class="note up-good" id="tile-hours-note">▲ 6 h buffer remaining</div>
+      </div>
+      <div class="tile">
+        <div class="label">Overall risk level</div>
+        <div class="value" style="font-size:18px; padding-top:6px;">
+          <span class="pill warning" id="tile-risk"><span class="dot"></span>⚠ Moderate</span>
+        </div>
+        <div class="note" id="tile-risk-note">Driven by CS301 progress</div>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <div class="chart-title">Planned study hours — next 7 days</div>
+        <div class="chart-sub" id="chart-sub">Blue = scheduled study time · hover a bar for detail</div>
+        <div class="barchart" id="barchart">
+          <div class="barcol" data-tip="Sat 29 Aug — 2 h (IS216)"><div class="bar" style="height:29%"></div></div>
+          <div class="barcol" data-tip="Sun 30 Aug — 3 h (CS301, STAT201)"><div class="bar" style="height:43%"></div></div>
+          <div class="barcol" data-tip="Mon 31 Aug — 4 h (IS216 quiz prep)"><div class="bar" style="height:57%"></div></div>
+          <div class="barcol" data-tip="Tue 1 Sep — 3 h (CS301)"><div class="bar" style="height:43%"></div></div>
+          <div class="barcol" data-tip="Wed 2 Sep — 2 h (ECON111)"><div class="bar" style="height:29%"></div></div>
+          <div class="barcol" data-tip="Thu 3 Sep — 3 h (CS301, IS212)"><div class="bar" style="height:43%"></div></div>
+          <div class="barcol" data-tip="Fri 4 Sep — 1 h (review)"><div class="bar" style="height:14%"></div></div>
+        </div>
+        <div class="bar-labels">
+          <span>Sat</span><span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Upcoming deadlines</h3>
+        <ul class="rowlist">
+          <li>
+            <div class="main">
+              <div class="title"><span class="mod-tag">IS216</span>Quiz 1 — Web App Dev II</div>
+              <div class="meta">Mon 31 Aug · in 2 days</div>
+            </div>
+            <span class="pill good"><span class="dot"></span>✓ On track</span>
+          </li>
+          <li>
+            <div class="main">
+              <div class="title"><span class="mod-tag">CS301</span>Assignment 2 — Solution Architecture</div>
+              <div class="meta" id="cs301-due">Fri 4 Sep · in 6 days · 40% complete</div>
+            </div>
+            <span class="pill warning" id="cs301-pill"><span class="dot"></span>⚠ Behind pace</span>
+          </li>
+          <li>
+            <div class="main">
+              <div class="title"><span class="mod-tag">IS212</span>Sprint 1 deliverable</div>
+              <div class="meta">Wed 9 Sep · in 11 days</div>
+            </div>
+            <span class="pill good"><span class="dot"></span>✓ On track</span>
+          </li>
+          <li>
+            <div class="main">
+              <div class="title"><span class="mod-tag">STAT201</span>Problem set 3</div>
+              <div class="meta">Fri 11 Sep · in 13 days</div>
+            </div>
+            <span class="pill good"><span class="dot"></span>✓ Not started (low effort)</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Try the demo story 🎬</h3>
+      <p style="margin:6px 0 12px; color:var(--ink-2);">
+        This is the core of the project: something changes at the university, and the whole system adapts.
+        Click the button to simulate a deadline moving forward.
+      </p>
+      <button class="btn primary" id="sim-btn">Simulate: CS301 deadline moves Fri 4 Sep → Tue 1 Sep</button>
+    </div>
+  </section>
+
+  <!-- ================= ADAPTIVE PLANNER ================= -->
+  <section class="tab" id="tab-planner">
+    <h2>Adaptive planner — week of 29 Aug</h2>
+    <p class="hint" data-normal>The schedule below was generated from your deadlines, availability, priorities and workload limits.</p>
+    <p class="hint" data-sim hidden>🔄 The plan was <b>automatically recalculated</b> after the CS301 deadline change. Dashed blue blocks are new or moved; struck-out blocks were pushed back.</p>
+
+    <div class="card">
+      <div class="week">
+        <div class="day">
+          <div class="day-head">Sat <span class="date">29 Aug</span></div>
+          <div class="slot deep"><div class="slot-mod">IS216</div><div class="slot-task">Quiz 1 revision</div><div class="slot-time">14:00–16:00</div></div>
+          <div class="slot changed" data-sim hidden><div class="changed-tag">Added</div><div class="slot-mod">CS301</div><div class="slot-task">Assignment 2 — API design</div><div class="slot-time">19:00–21:00</div></div>
+        </div>
+        <div class="day">
+          <div class="day-head">Sun <span class="date">30 Aug</span></div>
+          <div class="slot deep"><div class="slot-mod">CS301</div><div class="slot-task">Assignment 2 — diagrams</div><div class="slot-time">10:00–12:00</div></div>
+          <div class="slot" data-normal><div class="slot-mod">STAT201</div><div class="slot-task">Tutorial prep</div><div class="slot-time">15:00–16:00</div></div>
+          <div class="slot removed" data-sim hidden><div class="slot-mod">STAT201</div><div class="slot-task">Tutorial prep</div><div class="slot-time">15:00–16:00</div></div>
+          <div class="slot changed" data-sim hidden><div class="changed-tag">Added</div><div class="slot-mod">CS301</div><div class="slot-task">Assignment 2 — write-up</div><div class="slot-time">15:00–17:00</div></div>
+        </div>
+        <div class="day">
+          <div class="day-head">Mon <span class="date">31 Aug</span></div>
+          <div class="slot deep"><div class="slot-mod">IS216</div><div class="slot-task">Quiz 1 final prep</div><div class="slot-time">17:00–19:00</div></div>
+          <div class="slot"><div class="slot-mod">IS216</div><div class="slot-task">📝 Quiz 1 (in class)</div><div class="slot-time">19:30</div></div>
+          <div class="slot changed" data-sim hidden><div class="changed-tag">Added</div><div class="slot-mod">CS301</div><div class="slot-task">Assignment 2 — testing</div><div class="slot-time">21:00–22:00</div></div>
+        </div>
+        <div class="day">
+          <div class="day-head">Tue <span class="date">1 Sep</span></div>
+          <div class="slot" data-normal><div class="slot-mod">CS301</div><div class="slot-task">Assignment 2 — write-up</div><div class="slot-time">16:00–19:00</div></div>
+          <div class="slot changed" data-sim hidden><div class="changed-tag">Deadline</div><div class="slot-mod">CS301</div><div class="slot-task">🚨 Assignment 2 DUE 23:59</div><div class="slot-time">final review 16:00–18:00</div></div>
+        </div>
+        <div class="day">
+          <div class="day-head">Wed <span class="date">2 Sep</span></div>
+          <div class="slot"><div class="slot-mod">ECON111</div><div class="slot-task">Readings ch. 4</div><div class="slot-time">15:00–17:00</div></div>
+          <div class="slot changed" data-sim hidden><div class="changed-tag">Moved here</div><div class="slot-mod">STAT201</div><div class="slot-task">Tutorial prep</div><div class="slot-time">19:00–20:00</div></div>
+        </div>
+        <div class="day">
+          <div class="day-head">Thu <span class="date">3 Sep</span></div>
+          <div class="slot" data-normal><div class="slot-mod">CS301</div><div class="slot-task">Assignment 2 — testing</div><div class="slot-time">16:00–18:00</div></div>
+          <div class="slot"><div class="slot-mod">IS212</div><div class="slot-task">Sprint 1 tasks</div><div class="slot-time">20:00–21:00</div></div>
+          <div class="slot free" data-sim hidden>recovered free time 🎉</div>
+        </div>
+        <div class="day">
+          <div class="day-head">Fri <span class="date">4 Sep</span></div>
+          <div class="slot" data-normal><div class="slot-mod">CS301</div><div class="slot-task">🚨 Assignment 2 DUE 23:59</div><div class="slot-time">buffer 17:00–18:00</div></div>
+          <div class="slot free" data-sim hidden>free — deadline already cleared</div>
+          <div class="slot free" data-normal>evening free</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <h3>How this plan was chosen</h3>
+        <p style="margin:4px 0; color:var(--ink-2); font-size:13px;">
+          The optimisation engine filled your 24 available hours respecting: max 4 h study per day,
+          no sessions during classes or CCA (Tue 19:00–22:00), IS216 quiz prioritised before its Monday date,
+          and CS301 marked high-priority because your progress (40%) is behind its pace target (60%).
+        </p>
+      </div>
+      <div class="card">
+        <h3>Plan history</h3>
+        <ul class="rowlist">
+          <li data-sim hidden><div class="main"><div class="title">v4 — recalculated after CS301 deadline change</div><div class="meta">today · trigger: university info change</div></div><span class="pill critical"><span class="dot"></span>⛔ Auto</span></li>
+          <li><div class="main"><div class="title">v3 — current plan</div><div class="meta">Thu 27 Aug · trigger: weekly re-optimisation</div></div><span class="pill good"><span class="dot"></span>✓ Accepted</span></li>
+          <li><div class="main"><div class="title">v2 — added STAT201 problem set</div><div class="meta">Mon 24 Aug · trigger: new task</div></div><span class="pill good"><span class="dot"></span>✓ Accepted</span></li>
+          <li><div class="main"><div class="title">v1 — initial semester plan</div><div class="meta">Mon 17 Aug · trigger: profile created</div></div><span class="pill good"><span class="dot"></span>✓ Accepted</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= RISK FORECAST ================= -->
+  <section class="tab" id="tab-risks">
+    <h2>Academic risk forecast</h2>
+    <p class="hint">Forecasts are recomputed whenever your progress, availability or deadlines change.</p>
+
+    <div class="card risk-card level-warning" data-normal>
+      <div class="risk-head">
+        <h3 style="margin:0;"><span class="mod-tag">CS301</span>Assignment 2 — deadline risk</h3>
+        <span class="pill warning"><span class="dot"></span>⚠ Moderate</span>
+      </div>
+      <p class="prob" style="margin:8px 0 0;">Probability of missing the deadline: <b>35%</b></p>
+      <div class="meter"><div style="width:35%; background:var(--warning);"></div></div>
+      <p style="font-size:13px; color:var(--ink-2); margin:10px 0 0;">
+        At your current rate (40% done, ~2 h/session progress), you need <b>7 more hours</b>; the plan reserves 8.
+        Sustainable, but with little slack — one missed session pushes this to high risk.
+      </p>
+    </div>
+
+    <div class="card risk-card level-critical" data-sim hidden>
+      <div class="risk-head">
+        <h3 style="margin:0;"><span class="mod-tag">CS301</span>Assignment 2 — deadline risk</h3>
+        <span class="pill critical"><span class="dot"></span>⛔ High</span>
+      </div>
+      <p class="prob" style="margin:8px 0 0;">Probability of missing the deadline: <b>72%</b> <span style="color:var(--critical); font-weight:700;">(was 35%)</span></p>
+      <div class="meter"><div style="width:72%; background:var(--critical);"></div></div>
+      <p style="font-size:13px; color:var(--ink-2); margin:10px 0 0;">
+        The deadline moved forward 3 days. You still need <b>7 hours</b> of work but only <b>5 hours</b> remained scheduled before Tue.
+        The recalculated plan recovers 7 h by moving STAT201 prep and adding evening sessions — accept it in the AI Advisor to reduce this risk to ~20%.
+      </p>
+    </div>
+
+    <div class="card risk-card level-warning" data-sim hidden>
+      <div class="risk-head">
+        <h3 style="margin:0;">Workload overflow forecast</h3>
+        <span class="pill warning"><span class="dot"></span>⚠ Watch</span>
+      </div>
+      <p style="font-size:13px; color:var(--ink-2); margin:8px 0 0;">
+        With the compressed schedule, you will study <b>22 of 24</b> available hours this week — above your preferred 80% load.
+        Expect fatigue risk; next week's plan will be lightened automatically.
+      </p>
+    </div>
+
+    <div class="card risk-card level-good">
+      <div class="risk-head">
+        <h3 style="margin:0;"><span class="mod-tag">IS216</span>Quiz 1 — readiness</h3>
+        <span class="pill good"><span class="dot"></span>✓ Low</span>
+      </div>
+      <p class="prob" style="margin:8px 0 0;">Predicted readiness by Mon: <b>High</b> — 4 h of prep scheduled, historical quiz average strong.</p>
+      <div class="meter"><div style="width:12%; background:var(--good);"></div></div>
+    </div>
+
+    <div class="card">
+      <h3>Modules needing attention (next 2 weeks)</h3>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Module</th><th>Signal</th><th class="num">Risk score</th><th>Trend</th></tr></thead>
+          <tbody>
+            <tr><td><span class="mod-tag">CS301</span>IT Solution Architecture</td><td>Behind pace on Assignment 2</td><td class="num" data-normal>58</td><td class="num" data-sim hidden>81</td><td data-normal>→ steady</td><td data-sim hidden>▲ rising</td></tr>
+            <tr><td><span class="mod-tag">IS212</span>Software Project Mgmt</td><td>Sprint 1 dependencies on teammates</td><td class="num">34</td><td>→ steady</td></tr>
+            <tr><td><span class="mod-tag">STAT201</span>Probability &amp; Statistics</td><td>Problem set not started (low effort)</td><td class="num">21</td><td>▼ falling</td></tr>
+            <tr><td><span class="mod-tag">ECON111</span>Intro to Economics</td><td>On schedule</td><td class="num">12</td><td>▼ falling</td></tr>
+            <tr><td><span class="mod-tag">IS216</span>Web App Development II</td><td>Quiz prep on track</td><td class="num">9</td><td>▼ falling</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= BOSS ASSISTANT ================= -->
+  <section class="tab" id="tab-boss">
+    <h2>BOSS bidding assistant</h2>
+    <p class="hint">Recommendations for AY2026–27 Term 2 based on your grades, workload tolerance, goals and historical clearing prices.</p>
+
+    <div class="tiles">
+      <div class="tile"><div class="label">Available bid balance</div><div class="value">e$ 154</div><div class="note">after Term 1 refunds</div></div>
+      <div class="tile"><div class="label">Modules to secure</div><div class="value">4</div><div class="note">16 course units target</div></div>
+      <div class="tile"><div class="label">Profile fit signal</div><div class="value" style="font-size:16px; padding-top:8px;">Programming-heavy ✓</div><div class="note">strong past results in coding mods</div></div>
+    </div>
+
+    <div class="card">
+      <h3>Recommended modules (ranked by fit)</h3>
+      <div class="tbl-wrap">
+        <table>
+          <thead>
+            <tr><th>Module</th><th>Fit</th><th>Why</th><th class="num">Median clearing (hist.)</th><th class="num">Suggested bid</th><th>Risk</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="mod-tag">CS302</span>IT Solution Lifecycle Mgmt</td>
+              <td><span class="fitbar"><i style="width:92%"></i></span>92</td>
+              <td>Builds on CS301; strong grades in similar mods</td>
+              <td class="num">e$ 25</td><td class="num"><b>e$ 32</b></td>
+              <td><span class="pill good"><span class="dot"></span>✓ Safe</span></td>
+            </tr>
+            <tr>
+              <td><span class="mod-tag">IS217</span>Analytics Foundation</td>
+              <td><span class="fitbar"><i style="width:85%"></i></span>85</td>
+              <td>Matches data-career goal; moderate workload</td>
+              <td class="num">e$ 41</td><td class="num"><b>e$ 50</b></td>
+              <td><span class="pill warning"><span class="dot"></span>⚠ Popular</span></td>
+            </tr>
+            <tr>
+              <td><span class="mod-tag">CS440</span>Foundations of Cybersecurity</td>
+              <td><span class="fitbar"><i style="width:78%"></i></span>78</td>
+              <td>Fits CTF interest; heavier workload term</td>
+              <td class="num">e$ 18</td><td class="num"><b>e$ 24</b></td>
+              <td><span class="pill good"><span class="dot"></span>✓ Safe</span></td>
+            </tr>
+            <tr>
+              <td><span class="mod-tag">IS215</span>Digital Business</td>
+              <td><span class="fitbar"><i style="width:70%"></i></span>70</td>
+              <td>Core requirement; group-project heavy</td>
+              <td class="num">e$ 30</td><td class="num"><b>e$ 38</b></td>
+              <td><span class="pill warning"><span class="dot"></span>⚠ Volatile price</span></td>
+            </tr>
+            <tr>
+              <td><span class="mod-tag">ACCT101</span>Financial Accounting</td>
+              <td><span class="fitbar"><i style="width:44%"></i></span>44</td>
+              <td>Weak fit: low past performance in similar mods + high workload clash</td>
+              <td class="num">e$ 12</td><td class="num">—</td>
+              <td><span class="pill serious"><span class="dot"></span>⚠ Not advised this term</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="hint" style="margin-top:10px;">Suggested bids total e$ 144 of your e$ 154 — an e$ 10 reserve is kept for round-2 adjustments.</p>
+    </div>
+
+    <div class="card">
+      <h3>Scenario comparison</h3>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Scenario</th><th>Modules</th><th class="num">Est. weekly workload</th><th class="num">Win probability</th><th>Verdict</th></tr></thead>
+          <tbody>
+            <tr><td><b>A — Balanced (recommended)</b></td><td>CS302 · IS217 · CS440 · IS215</td><td class="num">31 h</td><td class="num">88%</td><td><span class="pill good"><span class="dot"></span>✓ Best fit</span></td></tr>
+            <tr><td>B — Career-rush</td><td>CS302 · IS217 · CS440 · CS480</td><td class="num">38 h</td><td class="num">74%</td><td><span class="pill serious"><span class="dot"></span>⚠ Exceeds workload tolerance</span></td></tr>
+            <tr><td>C — Light term</td><td>CS302 · IS215 · ECON112</td><td class="num">24 h</td><td class="num">95%</td><td><span class="pill warning"><span class="dot"></span>⚠ Delays graduation plan</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= UNIVERSITY INFO ================= -->
+  <section class="tab" id="tab-info">
+    <h2>University information intelligence</h2>
+    <p class="hint">Multi-source RAG monitors announcements, course outlines and policies, then flags what affects <b>you</b>.</p>
+
+    <div class="card">
+      <div class="feed-item" data-sim hidden>
+        <div class="feed-icon">🚨</div>
+        <div class="feed-body">
+          <div class="feed-title">CS301 Assignment 2 deadline changed <span class="tag change">change detected</span> <span class="tag fresh">2 min ago</span></div>
+          <div class="feed-meta">Source: eLearn announcement by Prof. Tan · affects you: <b>yes</b> — plan recalculated, risk updated, recommendation issued</div>
+        </div>
+      </div>
+      <div class="feed-item">
+        <div class="feed-icon">📢</div>
+        <div class="feed-body">
+          <div class="feed-title">IS216 Quiz 1 covers labs 1–4 only <span class="tag fresh">today</span></div>
+          <div class="feed-meta">Source: eLearn announcement · affects you: <b>yes</b> — Monday prep session narrowed to labs 3–4</div>
+        </div>
+      </div>
+      <div class="feed-item">
+        <div class="feed-icon">⚖️</div>
+        <div class="feed-body">
+          <div class="feed-title">Conflicting exam dates for STAT201 final <span class="tag conflict">sources disagree</span></div>
+          <div class="feed-meta">Course outline (PDF, 12 Aug) says 24 Nov · exam timetable portal (27 Aug) says 26 Nov — portal treated as authoritative (newer, official). Flagged for your confirmation.</div>
+        </div>
+      </div>
+      <div class="feed-item">
+        <div class="feed-icon">📋</div>
+        <div class="feed-body">
+          <div class="feed-title">BOSS Round 1 for Term 2 opens 12 Oct <span class="tag fresh">this week</span></div>
+          <div class="feed-meta">Source: OASIS announcement · affects you: <b>yes</b> — bidding plan draft ready in BOSS Assistant</div>
+        </div>
+      </div>
+      <div class="feed-item">
+        <div class="feed-icon">🗓️</div>
+        <div class="feed-body">
+          <div class="feed-title">Wellness Day — no classes 18 Sep <span class="tag stale">2 weeks old</span></div>
+          <div class="feed-meta">Source: university-wide email · affects you: <b>mildly</b> — planner treats it as extra availability (+4 h)</div>
+        </div>
+      </div>
+      <div class="feed-item">
+        <div class="feed-icon">📜</div>
+        <div class="feed-body">
+          <div class="feed-title">Updated academic integrity policy on AI tool usage <span class="tag stale">3 weeks old</span></div>
+          <div class="feed-meta">Source: university policy page · affects you: <b>no direct task impact</b> — stored for reference with citation</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= AI ADVISOR ================= -->
+  <section class="tab" id="tab-advisor">
+    <h2>AI academic advisor</h2>
+    <p class="hint">The advisor recommends — you stay in control. Every recommendation shows its reasoning and can be accepted, rejected or modified.</p>
+
+    <div class="card rec" data-sim hidden>
+      <h3>🚨 Adopt the recalculated CS301 plan</h3>
+      <p style="margin:4px 0; font-size:13.5px;">Move STAT201 prep to Wednesday and add three CS301 evening sessions (Sat, Sun, Mon) so Assignment 2 is completed before the new Tuesday deadline.</p>
+      <div class="why">
+        <b>Why this recommendation</b>
+        Your CS301 deadline moved forward by 3 days while your progress (40%) indicates ~7 hours of remaining work.
+        Without changes, miss probability is 72%. This plan restores feasibility (miss probability ~20%) while keeping your
+        IS216 quiz prep untouched, since that deadline is nearer and the module is higher priority in your profile.
+      </div>
+      <div class="rec-actions">
+        <button class="btn primary" data-action="accept">✓ Accept</button>
+        <button class="btn danger-outline" data-action="reject">✕ Reject</button>
+        <button class="btn" data-action="modify">✎ Modify</button>
+        <span class="confidence">Confidence: high (0.86)</span>
+      </div>
+      <div class="modify-box" hidden>
+        <textarea>Keep Sunday morning free — I have church. Shift that session elsewhere.</textarea>
+        <button class="btn small modify-send" style="margin-top:6px;">Send modification</button>
+      </div>
+      <p class="rec-status" hidden></p>
+    </div>
+
+    <div class="card rec">
+      <h3>Shift 2 h from ECON111 to CS301 this week</h3>
+      <p style="margin:4px 0; font-size:13.5px;">Reduce ECON111 reading time from 4 h to 2 h and reallocate it to CS301 Assignment 2.</p>
+      <div class="why">
+        <b>Why this recommendation</b>
+        ECON111 is ahead of schedule (readings 1 week ahead) while CS301 is behind its pace target.
+        Historically you perform well in economics with less prep time, so the expected cost of this trade is low.
+      </div>
+      <div class="rec-actions">
+        <button class="btn primary" data-action="accept">✓ Accept</button>
+        <button class="btn danger-outline" data-action="reject">✕ Reject</button>
+        <button class="btn" data-action="modify">✎ Modify</button>
+        <span class="confidence">Confidence: medium (0.71)</span>
+      </div>
+      <div class="modify-box" hidden>
+        <textarea>Only shift 1 hour instead of 2.</textarea>
+        <button class="btn small modify-send" style="margin-top:6px;">Send modification</button>
+      </div>
+      <p class="rec-status" hidden></p>
+    </div>
+
+    <div class="card rec">
+      <h3>Start STAT201 problem set early</h3>
+      <p style="margin:4px 0; font-size:13.5px;">Add one 1-hour STAT201 session next Tuesday to avoid stacking it against the IS212 sprint deliverable.</p>
+      <div class="why">
+        <b>Why this recommendation</b>
+        Both tasks land in the same week (9–11 Sep). Your history shows quality drops when two deliverables share a week
+        with under 3 h of buffer. Starting early removes the collision at minimal cost.
+      </div>
+      <div class="rec-actions">
+        <button class="btn primary" data-action="accept">✓ Accept</button>
+        <button class="btn danger-outline" data-action="reject">✕ Reject</button>
+        <button class="btn" data-action="modify">✎ Modify</button>
+        <span class="confidence">Confidence: medium (0.68)</span>
+      </div>
+      <div class="modify-box" hidden>
+        <textarea></textarea>
+        <button class="btn small modify-send" style="margin-top:6px;">Send modification</button>
+      </div>
+      <p class="rec-status" hidden></p>
+    </div>
+
+    <div class="card" style="border-style:dashed;">
+      <h3>Guardrails (always on)</h3>
+      <p style="margin:4px 0; color:var(--ink-2); font-size:13px;">
+        Every AI recommendation is validated before you see it: it must respect your availability, daily workload limits and
+        real deadlines; low-confidence outputs are withheld; and nothing changes your plan without your approval.
+        If no feasible schedule exists, the system says so and offers trade-offs instead of inventing an impossible timetable.
+      </p>
+    </div>
+  </section>
+
+</main>
+
+<div class="tooltip" id="tooltip" hidden></div>
+
+<footer>
+  Adaptive Academic Planner — rough interactive mockup · all data is hardcoded sample data · no backend yet
+</footer>
+
+<script>
+/* ---------- Tabs ---------- */
+var tabButtons = document.querySelectorAll('#tabs button');
+tabButtons.forEach(function (btn) {
+  btn.addEventListener('click', function () {
+    tabButtons.forEach(function (b) { b.classList.remove('active'); });
+    btn.classList.add('active');
+    document.querySelectorAll('section.tab').forEach(function (s) { s.classList.remove('active'); });
+    document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+  });
+});
+
+/* ---------- Bar chart tooltip ---------- */
+var tooltip = document.getElementById('tooltip');
+document.querySelectorAll('.barcol').forEach(function (col) {
+  col.addEventListener('mousemove', function (e) {
+    tooltip.textContent = col.dataset.tip;
+    tooltip.style.left = e.clientX + 'px';
+    tooltip.style.top = e.clientY + 'px';
+    tooltip.hidden = false;
+  });
+  col.addEventListener('mouseleave', function () { tooltip.hidden = true; });
+});
+
+/* ---------- Deadline-change simulation ---------- */
+var simulated = false;
+
+function setSimulated(on) {
+  simulated = on;
+  document.getElementById('sim-banner').hidden = !on;
+  document.getElementById('risk-badge').hidden = !on;
+  document.getElementById('advisor-badge').hidden = !on;
+
+  /* overview tiles */
+  document.getElementById('tile-deadlines-note').textContent = on ? 'Nearest: CS301 A2, Tue (moved!)' : 'Nearest: IS216 quiz, Mon';
+  document.getElementById('tile-hours').textContent = on ? '22 / 24 h' : '18 / 24 h';
+  var hoursNote = document.getElementById('tile-hours-note');
+  hoursNote.textContent = on ? '▼ only 2 h buffer remaining' : '▲ 6 h buffer remaining';
+  hoursNote.className = on ? 'note down-bad' : 'note up-good';
+  var riskPill = document.getElementById('tile-risk');
+  riskPill.className = on ? 'pill critical' : 'pill warning';
+  riskPill.innerHTML = on ? '<span class="dot"></span>⛔ High' : '<span class="dot"></span>⚠ Moderate';
+  document.getElementById('tile-risk-note').textContent = on ? 'CS301 deadline moved forward 3 days' : 'Driven by CS301 progress';
+
+  /* overview deadline row */
+  document.getElementById('cs301-due').textContent = on ? 'Tue 1 Sep · in 3 days · 40% complete · ⚠ moved from Fri 4 Sep' : 'Fri 4 Sep · in 6 days · 40% complete';
+  var pill = document.getElementById('cs301-pill');
+  pill.className = on ? 'pill critical' : 'pill warning';
+  pill.innerHTML = on ? '<span class="dot"></span>⛔ High risk' : '<span class="dot"></span>⚠ Behind pace';
+
+  /* everything marked data-sim shows only in simulated mode; data-normal only in normal mode */
+  document.querySelectorAll('[data-sim]').forEach(function (el) { el.hidden = !on; });
+  document.querySelectorAll('[data-normal]').forEach(function (el) { el.hidden = on; });
+}
+
+document.getElementById('sim-btn').addEventListener('click', function () {
+  setSimulated(true);
+  /* jump to the planner so the change is visible */
+  document.querySelector('#tabs button[data-tab="planner"]').click();
+  window.scrollTo(0, 0);
+});
+document.getElementById('sim-reset').addEventListener('click', function () { setSimulated(false); });
+
+/* ---------- Advisor accept / reject / modify ---------- */
+function handleRec(card, action) {
+  var status = card.querySelector('.rec-status');
+  var actions = card.querySelector('.rec-actions');
+  var modifyBox = card.querySelector('.modify-box');
+  if (action === 'accept') {
+    card.classList.add('accepted');
+    card.classList.remove('rejected');
+    actions.hidden = true;
+    if (modifyBox) modifyBox.hidden = true;
+    status.className = 'rec-status ok';
+    status.textContent = '✓ Accepted — the plan has been updated.';
+    status.hidden = false;
+  } else if (action === 'reject') {
+    card.classList.add('rejected');
+    actions.hidden = true;
+    if (modifyBox) modifyBox.hidden = true;
+    status.className = 'rec-status no';
+    status.textContent = '✕ Rejected — the plan stays as it is.';
+    status.hidden = false;
+  } else if (action === 'modify') {
+    if (modifyBox) modifyBox.hidden = !modifyBox.hidden;
+  }
+}
+document.querySelectorAll('.rec').forEach(function (card) {
+  card.querySelectorAll('[data-action]').forEach(function (btn) {
+    btn.addEventListener('click', function () { handleRec(card, btn.dataset.action); });
+  });
+  var send = card.querySelector('.modify-send');
+  if (send) {
+    send.addEventListener('click', function () {
+      var status = card.querySelector('.rec-status');
+      card.classList.add('accepted');
+      card.querySelector('.rec-actions').hidden = true;
+      card.querySelector('.modify-box').hidden = true;
+      status.className = 'rec-status ok';
+      status.textContent = '✓ Modification sent — the AI will regenerate the plan with your constraint.';
+      status.hidden = false;
+    });
+  }
+});
+</script>
+
+</body>
+</html>
